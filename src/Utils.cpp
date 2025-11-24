@@ -154,12 +154,8 @@ std::string Utils::sha1(const std::vector<unsigned char>& data) {
 *  and throws IllegalArgumentException unless the directory designated by
 *  FILE also contains a directory named .gitlite. */
 bool Utils::restrictedDelete(const std::string& filepath) {
-    // Extract parent directory
-    size_t pos = filepath.find_last_of("/\\");
-    std::string parentDir = (pos == std::string::npos) ? "." : filepath.substr(0, pos);
-    std::string gitliteDir = parentDir + "/.gitlite";
-
-    if (!isDirectory(gitliteDir)) {
+    // Check if current directory has .gitlite
+    if (!isDirectory(".gitlite")) {
         throw std::invalid_argument("not .gitlite working directory");
     }
     
