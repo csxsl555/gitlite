@@ -1,0 +1,3 @@
+/home/csxsi/gitlite/build/CMakeFiles/rebuild_cache.dir
+/home/csxsi/gitlite/build/CMakeFiles/edit_cache.dir
+/home/csxsi/gitlite/build/CMakeFiles/gitlite.dir
