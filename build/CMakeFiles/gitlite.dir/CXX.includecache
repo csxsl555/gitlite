@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+/home/csxsi/gitlite/include/GitliteException.h
+exception
+-
+string
+-
+
 /home/csxsi/gitlite/include/Repository.h
 
 /home/csxsi/gitlite/include/SomeObj.h
@@ -14,6 +20,8 @@ string
 vector
 -
 map
+-
+set
 -
 
 /home/csxsi/gitlite/include/Utils.h
@@ -40,19 +48,53 @@ cstdint
 iomanip
 -
 
+/home/csxsi/gitlite/main.cpp
+iostream
+-
+vector
+-
+string
+-
+include/SomeObj.h
+/home/csxsi/gitlite/include/SomeObj.h
+include/Repository.h
+/home/csxsi/gitlite/include/Repository.h
+include/Utils.h
+/home/csxsi/gitlite/include/Utils.h
+
+/home/csxsi/gitlite/src/Commit.cpp
+
+/home/csxsi/gitlite/src/GitliteException.cpp
+../include/GitliteException.h
+/home/csxsi/gitlite/include/GitliteException.h
+
+/home/csxsi/gitlite/src/Repository.cpp
+
 /home/csxsi/gitlite/src/SomeObj.cpp
 ../include/SomeObj.h
 /home/csxsi/gitlite/include/SomeObj.h
-../include/Utils.h
-/home/csxsi/gitlite/include/Utils.h
 ../include/Repository.h
 /home/csxsi/gitlite/include/Repository.h
+../include/Utils.h
+/home/csxsi/gitlite/include/Utils.h
+ctime
+-
 fstream
+-
+iomanip
 -
 iostream
 -
-ctime
+
+/home/csxsi/gitlite/src/Utils.cpp
+../include/Utils.h
+/home/csxsi/gitlite/include/Utils.h
+cstdlib
 -
-iomanip
+iostream
+-
+sys/stat.h
+-
+cstring
 -
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 class SomeObj {
 public:
@@ -45,6 +46,7 @@ private:
     // Helper methods
     std::map<std::string, std::string> getFilesInCommit(const std::string& commitId);
     bool isFileTrackedInCommit(const std::string& filename, const std::string& commitId);
+    std::string findSplitPoint(const std::string& commitId1, const std::string& commitId2);
 };
 
 #endif // SOMEOBJ_H
