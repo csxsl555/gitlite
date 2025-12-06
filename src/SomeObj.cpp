@@ -121,11 +121,25 @@ void SomeObj::commit(const std::string& message) {
     commitContent += "message " + message + "\n";
     commitContent += "files ";
     
-    // Add staged files
+    // Start with files from current commit
+    auto currentCommitFiles = getFilesInCommit(currentCommitId);
+    
+    // Apply staged changes
     auto stagedFiles = Utils::plainFilenamesIn(".gitlite/staging");
     for (const auto& file : stagedFiles) {
         std::string blobId = Utils::readContentsAsString(".gitlite/staging/" + file);
-        commitContent += file + ":" + blobId + ";";
+        if (blobId == "DELETE") {
+            // Remove file from commit
+            currentCommitFiles.erase(file);
+        } else {
+            // Add or update file in commit
+            currentCommitFiles[file] = blobId;
+        }
+    }
+    
+    // Build files section from the updated map
+    for (const auto& pair : currentCommitFiles) {
+        commitContent += pair.first + ":" + pair.second + ";";
     }
     commitContent += "\n";
     

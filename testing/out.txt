@@ -117,3 +117,339 @@ Actual: === Branches ===
 
 === Untracked Files ===
 
+samples/3-status-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+g.txt
+
+samples/4-find-03.in: 
+reset b53dc4e60256d7db3f349affc6726698d6f2750e: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-global-log-02.in: 
+reset b53dc4e60256d7db3f349affc6726698d6f2750e: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-reset-01.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-reset-02.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-01.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-02.in: 
+checkout master: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-03.in: 
+checkout master: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-04.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-05.in: 
+merge C1: 
+Expected: []
+Actual: Merge command not yet implemented.
+
+samples/5-merge-06.in: 
+rm f.txt: 
+Expected: []
+Actual: No reason to remove the file.
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: Merge command not yet implemented.
+
+samples/5-merge-08.in: 
+checkout branch1: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/6-remote-01.in: 
+fetch R1 master: 
+Expected: []
+Actual: fetch command not yet implemented.
+
+samples/6-remote-02.in: 
+fetch R1 master: 
+Expected: []
+Actual: fetch command not yet implemented.
+
+samples/6-remote-03.in: 
+fetch R1 master: 
+Expected: ['Remote directory not found.']
+Actual: fetch command not yet implemented.
+
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', 'f.txt (modified)', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/3-status-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+g.txt
+
+samples/4-find-03.in: 
+reset 0551e155352190e67824658d306a645d558e3020: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-global-log-02.in: 
+reset 0551e155352190e67824658d306a645d558e3020: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-reset-01.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-reset-02.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-01.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-02.in: 
+checkout master: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-03.in: 
+checkout master: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-04.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-05.in: 
+merge C1: 
+Expected: []
+Actual: Merge command not yet implemented.
+
+samples/5-merge-06.in: 
+rm f.txt: 
+Expected: []
+Actual: No reason to remove the file.
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: Merge command not yet implemented.
+
+samples/5-merge-08.in: 
+checkout branch1: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/6-remote-01.in: 
+fetch R1 master: 
+Expected: []
+Actual: fetch command not yet implemented.
+
+samples/6-remote-02.in: 
+fetch R1 master: 
+Expected: []
+Actual: fetch command not yet implemented.
+
+samples/6-remote-03.in: 
+fetch R1 master: 
+Expected: ['Remote directory not found.']
+Actual: fetch command not yet implemented.
+
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', 'f.txt (modified)', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/3-status-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+g.txt
+
+samples/4-find-03.in: 
+reset 04cc3fc9d6c9acf96a73e9f23f9af8b00799cc65: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-global-log-02.in: 
+reset a31030a2201386a9597ca70bda24bfcdd084a31c: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-reset-01.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/4-reset-02.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-01.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-02.in: 
+checkout master: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-03.in: 
+checkout master: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-04.in: 
+checkout other: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-05.in: 
+merge C1: 
+Expected: []
+Actual: Merge command not yet implemented.
+
+samples/5-merge-06.in: 
+rm f.txt: 
+Expected: []
+Actual: No reason to remove the file.
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: Merge command not yet implemented.
+
+samples/5-merge-08.in: 
+checkout branch1: 
+Expected: []
+Actual: There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/6-remote-01.in: 
+fetch R1 master: 
+Expected: []
+Actual: fetch command not yet implemented.
+
+samples/6-remote-02.in: 
+fetch R1 master: 
+Expected: []
+Actual: fetch command not yet implemented.
+
+samples/6-remote-03.in: 
+fetch R1 master: 
+Expected: ['Remote directory not found.']
+Actual: fetch command not yet implemented.
+
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', 'f.txt (modified)', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', 'f.txt (modified)', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/blank-status.inc: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: Not in an initialized Gitlite directory.
+
+samples/blank-status2.inc: 
+status: 
+Expected: ['=== Branches ===', '*master', 'other', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: Not in an initialized Gitlite directory.
+
