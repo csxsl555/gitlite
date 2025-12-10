@@ -1,2 +1,0 @@
-Hello, Gitlite!
-This is a test file.
