@@ -1,6 +1,20 @@
+"""
+Gitlite C++ 测试脚本（改编自 Gitlet 测试器）。
+
+关键流程（每个 TEST.in）：
+1) 创建临时目录并按指令 (+/-/=/*/E 等) 操作文件，支持包含文件 (I) 和切换子目录 (C)；
+2) 对 > 命令执行 gitlite 二进制，将输出按精确匹配或正则匹配（<<<*）比对，支持编辑距离容差；
+3) 记录失败详情、得分（按 TEST_SCORES），同时累积各子任务分数。
+
+使用要点：
+- 默认执行 build/gitlite，可用 --progdir 指定可执行所在目录。
+- --tolerance 设置输出编辑距离容忍度；--debug 逐条命令打印并选择继续/跳过调试。
+- --src 用于 + 和 = 的基准目录；--keep 保留测试生成的临时目录。
+"""
+
 import sys, re
 from subprocess import \
-     check_output, PIPE, STDOUT, DEVNULL, CalledProcessError, TimeoutExpired
+    check_output, PIPE, STDOUT, DEVNULL, CalledProcessError, TimeoutExpired
 from os.path import abspath, basename, dirname, exists, join, splitext
 from getopt import getopt, GetoptError
 from os import chdir, environ, getcwd, mkdir, remove, access, W_OK
@@ -229,8 +243,7 @@ def doExecute(cmnd, dir, timeout, line_num):
     out = ""
     try:
         chdir(dir)
-        
-        # 使用C++可执行文件
+        # 使用 C++ 可执行文件（已在 main 里解析路径），拼接命令行
         full_cmnd = "{} {}".format(CPP_EXECUTABLE, cmnd)
             
         if DEBUG:
@@ -346,7 +359,7 @@ def doTest(test):
     last_groups = []
     base = splitext(basename(test))[0]
     test_score = TEST_SCORES.get(base, 0)
-    # 不再输出单个测试的进度信息
+    # 不再输出单个测试的进度信息（仅在失败时打印）
 
     if DEBUG:
         print(DEBUG_MSG)
@@ -355,6 +368,7 @@ def doTest(test):
     defns = {}
 
     def do_substs(L):
+        """执行变量替换：${VAR} 来自 defns，${N} 来自上次正则匹配分组。"""
         c = 0
         L0 = None
         while L0 != L and c < 10:
@@ -364,6 +378,7 @@ def doTest(test):
         return L
 
     def subst_var(M):
+        """回调：支持数字分组和命名变量，未定义时报错。"""
         key = M.group(1)
         if Match(r'\d+$', key):
             try:
@@ -395,6 +410,7 @@ def doTest(test):
                     line = do_substs(line)
                 if verbose:
                     print("+ {}".format(line.rstrip()))
+                # 逐条解析测试指令
                 if Match(r'\s*#', line) or Match(r'\s+$', line):
                     pass
                 elif Match(r'I\s+(\S+)', line):
