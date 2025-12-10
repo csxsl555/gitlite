@@ -12,7 +12,12 @@
 
 SomeObj::SomeObj() {}
 
-// Initializes a new Gitlite repository
+/**
+ * Initializes a new Gitlite repository.
+ * Creates the .gitlite directory structure, including objects, refs/heads, and refs/remotes.
+ * Creates an initial commit with the message "initial commit" and timestamp 0.
+ * Sets up the master branch pointing to the initial commit and HEAD pointing to master.
+ */
 void SomeObj::init() {
     if (Utils::isDirectory(".gitlite")) {
         Utils::exitWithMessage("A Gitlite version-control system already exists in the current directory.");
@@ -43,7 +48,12 @@ void SomeObj::init() {
     Utils::writeContents(".gitlite/HEAD", "ref: refs/heads/master");
 }
 
-// Adds a file to the staging area
+/**
+ * Adds a file to the staging area.
+ * If the file is identical to the version in the current commit, it is removed from the staging area.
+ * If the file was staged for removal, it is unstaged.
+ * Otherwise, the file content is hashed and stored as a blob, and the file is added to the staging area.
+ */
 void SomeObj::add(const std::string &filename) {
     if (!Utils::exists(filename)) {
         Utils::exitWithMessage("File does not exist.");
@@ -99,7 +109,12 @@ void SomeObj::add(const std::string &filename) {
     }
 }
 
-// Commits the staged changes
+/**
+ * Commits the staged changes.
+ * Creates a new commit with the current timestamp and the given message.
+ * The new commit will include all files from the parent commit, updated with staged changes.
+ * Updates the current branch to point to the new commit and clears the staging area.
+ */
 void SomeObj::commit(const std::string &message) {
     if (message.empty()) {
         Utils::exitWithMessage("Please enter a commit message.");
@@ -162,7 +177,11 @@ void SomeObj::commit(const std::string &message) {
     system(command.c_str());
 }
 
-// Removes a file from the staging area or working directory
+/**
+ * Removes a file from the staging area or working directory.
+ * If the file is staged, it is unstaged.
+ * If the file is tracked in the current commit, it is staged for removal and removed from the working directory.
+ */
 void SomeObj::rm(const std::string &filename) {
     bool fileStaged = Utils::exists(".gitlite/staging/" + filename);
     bool fileTracked = false;
@@ -207,7 +226,11 @@ void SomeObj::rm(const std::string &filename) {
     }
 }
 
-// Displays the commit history
+/**
+ * Displays the commit history starting from the current HEAD.
+ * Shows the commit ID, date, and message for each commit.
+ * For merge commits, it also displays the parent commit IDs.
+ */
 void SomeObj::log() {
     std::string headContent = Utils::readContentsAsString(".gitlite/HEAD");
     std::string currentBranch = headContent.substr(16);
@@ -273,7 +296,10 @@ void SomeObj::log() {
     }
 }
 
-// Displays all commits ever made
+/**
+ * Displays all commits ever made in the repository.
+ * Iterates through all objects in the .gitlite/objects directory and prints details for commit objects.
+ */
 void SomeObj::globalLog() {
     auto commitFiles = Utils::plainFilenamesIn(".gitlite/objects");
 
@@ -316,7 +342,10 @@ void SomeObj::globalLog() {
     }
 }
 
-// Finds commits with the given message
+/**
+ * Finds and prints the IDs of all commits with the given commit message.
+ * If no such commit exists, prints an error message.
+ */
 void SomeObj::find(const std::string &commitMessage) {
     bool found = false;
     auto commitFiles = Utils::plainFilenamesIn(".gitlite/objects");
@@ -347,7 +376,10 @@ void SomeObj::find(const std::string &commitMessage) {
     }
 }
 
-// Restores a file from the current commit
+/**
+ * Restores a file from the current commit (HEAD).
+ * Overwrites the file in the working directory with the version from the current commit.
+ */
 void SomeObj::checkoutFile(const std::string &filename) {
     // Get current commit
     std::string headContent = Utils::readContentsAsString(".gitlite/HEAD");
@@ -413,7 +445,12 @@ void SomeObj::checkoutFileInCommit(const std::string &commitId, const std::strin
     Utils::writeContents(filename, fileContent);
 }
 
-// Switches to the specified branch
+/**
+ * Switches to the specified branch.
+ * Updates files in the working directory to match the commit at the head of the given branch.
+ * Updates HEAD to point to the new branch.
+ * Checks for untracked files that would be overwritten and aborts if any are found.
+ */
 void SomeObj::checkoutBranch(const std::string &branchName) {
     // Check if branch exists
     std::string branchPath = ".gitlite/refs/heads/" + branchName;
@@ -483,13 +520,22 @@ void SomeObj::checkoutBranch(const std::string &branchName) {
     }
 }
 
-// Displays the status of the repository
+/**
+ * Displays a full repository status snapshot.
+ * Steps: (1) read HEAD to identify the current branch and print all branches sorted (current marked with *);
+ * (2) list staged additions and staged deletions (entries marked with "DELETE");
+ * (3) compute "Modifications Not Staged" by comparing working tree vs tracked blobs vs staged blobs,
+ *     flagging content changes or deletions that are not already staged;
+ * (4) list untracked files that are neither staged nor tracked in the current commit.
+ * Mirrors the Git status layout so the user sees what will be committed and what remains to stage.
+ */
 void SomeObj::status() {
-    // Get current branch
+    // Current branch name derives from HEAD ref line: "ref: refs/heads/<branch>"
     std::string headContent = Utils::readContentsAsString(".gitlite/HEAD");
     std::string currentBranch = headContent.substr(16);
 
     // === Branches ===
+    // List branches alphabetically and mark the current one with '*'
     std::cout << "=== Branches ===" << std::endl;
     auto branches = Utils::plainFilenamesIn(".gitlite/refs/heads");
     std::sort(branches.begin(), branches.end());
@@ -503,6 +549,7 @@ void SomeObj::status() {
     }
 
     // === Staged Files ===
+    // Show files staged for addition/update (anything not marked DELETE)
     std::cout << std::endl
               << "=== Staged Files ===" << std::endl;
     if (Utils::isDirectory(".gitlite/staging")) {
@@ -518,6 +565,7 @@ void SomeObj::status() {
     }
 
     // === Removed Files ===
+    // Show files staged for removal (DELETE markers in staging)
     std::cout << std::endl
               << "=== Removed Files ===" << std::endl;
     if (Utils::isDirectory(".gitlite/staging")) {
@@ -533,6 +581,7 @@ void SomeObj::status() {
     }
 
     // === Modifications Not Staged For Commit ===
+    // Compare working tree vs tracked vs staged to find edits not yet staged
     std::cout << std::endl
               << "=== Modifications Not Staged For Commit ===" << std::endl;
 
@@ -571,6 +620,7 @@ void SomeObj::status() {
         }
         
         if (inWorking && inTracked && !inStaged) {
+            // Tracked file changed in working tree but not staged
             std::string workingContent = Utils::readContentsAsString(file);
             std::string trackedBlob = trackedFiles[file];
             if (Utils::exists(".gitlite/objects/" + trackedBlob)) {
@@ -580,6 +630,7 @@ void SomeObj::status() {
                 }
             }
         } else if (inWorking && inStaged && stagedContent != "DELETE") {
+            // Staged version differs from working tree (edited after staging)
             std::string workingContent = Utils::readContentsAsString(file);
             std::string stagedBlob = stagedContent;
             if (Utils::exists(".gitlite/objects/" + stagedBlob)) {
@@ -589,8 +640,10 @@ void SomeObj::status() {
                 }
             }
         } else if (!inWorking && inStaged && stagedContent != "DELETE") {
+            // Tracked/staged file removed from working tree but not staged as delete
             modifications[file] = "deleted";
         } else if (!inWorking && !inStaged && inTracked) {
+            // Tracked file missing and not staged -> deleted but unstaged
             modifications[file] = "deleted";
         }
     }
@@ -600,6 +653,7 @@ void SomeObj::status() {
     }
 
     // === Untracked Files ===
+    // Files neither staged nor tracked in HEAD
     std::cout << std::endl
               << "=== Untracked Files ===" << std::endl;
     {
@@ -626,7 +680,10 @@ void SomeObj::status() {
     }
 }
 
-// Creates a new branch
+/**
+ * Creates a new branch with the given name.
+ * The new branch points to the current commit.
+ */
 void SomeObj::branch(const std::string &branchName) {
     std::string branchPath = ".gitlite/refs/heads/" + branchName;
     if (Utils::exists(branchPath)) {
@@ -642,7 +699,11 @@ void SomeObj::branch(const std::string &branchName) {
     Utils::writeContents(branchPath, currentCommitId);
 }
 
-// Deletes the specified branch
+/**
+ * Deletes the specified branch.
+ * Removes the reference file for the branch.
+ * Aborts if the branch does not exist or if it is the current branch.
+ */
 void SomeObj::rmBranch(const std::string &branchName) {
     std::string branchPath = ".gitlite/refs/heads/" + branchName;
     if (!Utils::exists(branchPath)) {
@@ -660,9 +721,15 @@ void SomeObj::rmBranch(const std::string &branchName) {
     Utils::restrictedDelete(branchPath);
 }
 
-// Resets the current branch to the specified commit
+/**
+ * Resets the current branch to the specified commit.
+ * Resolves abbreviated commit IDs, ensures the target commit exists, and protects untracked files
+ * that would be overwritten. Then it replaces the working tree with the target commit's files,
+ * removes files absent from the target commit, updates the branch ref to the new commit, and
+ * clears the staging area so the working directory exactly mirrors the chosen commit.
+ */
 void SomeObj::reset(const std::string &commitId) {
-    // Find full commit ID
+    // Resolve abbreviated commit ID to full 40-char SHA if needed
     std::string fullCommitId = commitId;
     if (commitId.length() < 40) {
         auto commitFiles = Utils::plainFilenamesIn(".gitlite/objects");
@@ -681,18 +748,18 @@ void SomeObj::reset(const std::string &commitId) {
         }
     }
 
-    // Check if commit exists
+    // Ensure target commit object exists locally
     std::string commitPath = ".gitlite/objects/" + fullCommitId;
     if (!Utils::exists(commitPath)) {
         Utils::exitWithMessage("No commit with that id exists.");
     }
 
-    // Get current branch and commit
+    // Read current branch and its head commit
     std::string headContent = Utils::readContentsAsString(".gitlite/HEAD");
     std::string currentBranch = headContent.substr(16);
     std::string currentCommitId = Utils::readContentsAsString(".gitlite/refs/heads/" + currentBranch);
 
-    // Check for untracked files that would be overwritten
+    // Protect untracked files that would be overwritten by files from target commit
     auto currentFiles = Utils::plainFilenamesIn(".");
     auto targetCommitFiles = getFilesInCommit(fullCommitId);
     auto currentCommitFiles = getFilesInCommit(currentCommitId);
@@ -717,7 +784,7 @@ void SomeObj::reset(const std::string &commitId) {
         }
     }
 
-    // Restore files from target commit
+    // Restore files from target commit (write all blobs present in target)
     for (const auto &pair : targetCommitFiles) {
         std::string blobId = pair.second;
         std::string blobPath = ".gitlite/objects/" + blobId;
@@ -725,24 +792,33 @@ void SomeObj::reset(const std::string &commitId) {
         Utils::writeContents(pair.first, content);
     }
 
-    // Delete files that are tracked in current commit but not in target commit
+    // Remove files that existed in current commit but not in target commit
     for (const auto &pair : currentCommitFiles) {
         if (targetCommitFiles.find(pair.first) == targetCommitFiles.end()) {
             Utils::restrictedDelete(pair.first);
         }
     }
 
-    // Update branch pointer
+    // Move branch ref to the target commit
     Utils::writeContents(".gitlite/refs/heads/" + currentBranch, fullCommitId);
 
-    // Clear staging area
+    // Clear staging to ensure clean state matching the reset commit
     if (Utils::isDirectory(".gitlite/staging")) {
         std::string command = "rm -rf .gitlite/staging";
         system(command.c_str());
     }
 }
 
-// Merges the specified branch into the current branch
+/**
+ * Merges the specified branch into the current branch.
+ * Workflow:
+ *  - Validate repository state (initialized, branch exists, not merging current branch, no staged work).
+ *  - Find the split point (latest common ancestor) and short-circuit: ancestor -> print notice; fast-forward -> reset.
+ *  - For every file across split/current/given, decide outcomes (keep current, take given, delete, or mark conflict)
+ *    using staged markers and conflict blobs with <<<<<<< separators when both sides diverge.
+ *  - Stage the computed results, then write a merge commit with two parents. Conflicts surface as messages but the
+ *    merge commit is still created once conflicts are staged, matching the project spec.
+ */
 void SomeObj::merge(const std::string &branchName) {
     if (!Utils::isDirectory(".gitlite")) {
         Utils::exitWithMessage("Not in an initialized Gitlite directory.");
@@ -759,6 +835,7 @@ void SomeObj::merge(const std::string &branchName) {
         Utils::exitWithMessage("Cannot merge a branch with itself.");
     }
 
+    // Staging must be clean before merge
     if (Utils::isDirectory(".gitlite/staging") && !Utils::plainFilenamesIn(".gitlite/staging").empty()) {
         Utils::exitWithMessage("You have uncommitted changes.");
     }
@@ -767,11 +844,13 @@ void SomeObj::merge(const std::string &branchName) {
     std::string givenCommitId = Utils::readContentsAsString(branchPath);
     std::string splitPointId = findSplitPoint(currentCommitId, givenCommitId);
 
+    // Given is ancestor: nothing to merge
     if (splitPointId == givenCommitId) {
         std::cout << "Given branch is an ancestor of the current branch." << std::endl;
         return;
     }
 
+    // Current is ancestor: fast-forward to given
     if (splitPointId == currentCommitId) {
         reset(givenCommitId);
         std::cout << "Current branch fast-forwarded." << std::endl;
@@ -787,6 +866,7 @@ void SomeObj::merge(const std::string &branchName) {
         if (file == ".gitlite" || file.rfind(".gitlite/", 0) == 0) {
             continue;
         }
+        // If an untracked file would be overwritten by given branch content, abort
         bool trackedInCurrent = currentCommitFiles.find(file) != currentCommitFiles.end();
         bool stagedForAdd = Utils::isDirectory(".gitlite/staging") &&
                             Utils::exists(".gitlite/staging/" + file) &&
@@ -846,7 +926,7 @@ void SomeObj::merge(const std::string &branchName) {
             Utils::writeContents(".gitlite/staging/" + name, blob);
         };
 
-        bool handled = false;
+        bool handled = false; // true means no conflict and staged outcome decided
 
         if (inSplit) {
             if (inCurrent && inGiven) {
@@ -892,6 +972,7 @@ void SomeObj::merge(const std::string &branchName) {
             continue;
         }
 
+        // Divergent edits: build conflict blob with both contents
         hasConflicts = true;
         std::string curContent = inCurrent ? Utils::readContentsAsString(".gitlite/objects/" + curBlob) : "";
         std::string givContent = inGiven ? Utils::readContentsAsString(".gitlite/objects/" + givBlob) : "";
@@ -994,7 +1075,10 @@ std::string SomeObj::findSplitPoint(const std::string &commitId1, const std::str
     return best.empty() ? commitId1 : best;
 }
 
-// Adds a new remote repository
+/**
+ * Adds a new remote repository.
+ * Stores the remote name and its directory path in .gitlite/remotes.
+ */
 void SomeObj::addRemote(const std::string &remoteName, const std::string &remoteDir) {
     std::string remotesDir = ".gitlite/remotes";
     Utils::createDirectories(remotesDir);
@@ -1007,7 +1091,10 @@ void SomeObj::addRemote(const std::string &remoteName, const std::string &remote
     Utils::writeContents(remoteFile, remoteDir);
 }
 
-// Removes a remote repository
+/**
+ * Removes a remote repository.
+ * Deletes the configuration for the given remote name.
+ */
 void SomeObj::rmRemote(const std::string &remoteName) {
     std::string remoteFile = ".gitlite/remotes/" + remoteName;
     if (!Utils::exists(remoteFile)) {
@@ -1017,7 +1104,14 @@ void SomeObj::rmRemote(const std::string &remoteName) {
     Utils::restrictedDelete(remoteFile);
 }
 
-// Pushes changes to the remote repository
+/**
+ * Pushes changes to the remote repository.
+ * Steps: (1) read the remote path from .gitlite/remotes/<name> and verify it exists;
+ * (2) ensure fast-forward safety by requiring the remote branch head to be an ancestor of the local head;
+ * (3) breadth-first copy all commits and referenced blobs from local objects/ into remote objects/;
+ * (4) update the remote branch ref to the local head. Aborts with a helpful message if the remote has
+ * diverged (user must pull/merge first).
+ */
 void SomeObj::push(const std::string &remoteName, const std::string &remoteBranchName) {
     std::string remoteFile = ".gitlite/remotes/" + remoteName;
     if (!Utils::exists(remoteFile)) {
@@ -1044,7 +1138,7 @@ void SomeObj::push(const std::string &remoteName, const std::string &remoteBranc
     if (Utils::exists(remoteBranchFile)) {
         std::string remoteHeadCommitId = Utils::readContentsAsString(remoteBranchFile);
         
-        // Check if remoteHead is in history of currentCommitId
+        // Fast-forward check: remote head must be an ancestor of local head
         bool isAncestor = false;
         std::queue<std::string> q;
         q.push(currentCommitId);
@@ -1080,7 +1174,7 @@ void SomeObj::push(const std::string &remoteName, const std::string &remoteBranc
         }
     }
 
-    // Copy objects to remote
+    // Copy commits and blobs reachable from local head into remote objects/
     std::queue<std::string> q;
     q.push(currentCommitId);
     std::set<std::string> visited;
@@ -1103,7 +1197,7 @@ void SomeObj::push(const std::string &remoteName, const std::string &remoteBranc
             std::string content = Utils::readContentsAsString(localObjectPath);
             Utils::writeContents(remoteObjectPath, content);
             
-            // Parse parents
+            // Parse parents and enqueue for BFS copy
             size_t pos = content.find("parent ");
             if (pos != std::string::npos) {
                 size_t end = content.find('\n', pos);
@@ -1113,7 +1207,7 @@ void SomeObj::push(const std::string &remoteName, const std::string &remoteBranc
                 while(iss >> p) q.push(p);
             }
             
-            // Copy blobs
+            // Copy blobs referenced by this commit
             size_t filesPos = content.find("files ");
             if (filesPos != std::string::npos) {
                 std::string filesSection = content.substr(filesPos + 6);
@@ -1138,11 +1232,17 @@ void SomeObj::push(const std::string &remoteName, const std::string &remoteBranc
         }
     }
     
-    // Update remote branch head
+    // Update remote branch head to local head commit
     Utils::writeContents(remoteBranchFile, currentCommitId);
 }
 
-// Fetches changes from the remote repository
+/**
+ * Fetches changes from the remote repository without touching the working tree.
+ * Steps: (1) resolve the remote path and ensure the branch exists on the remote;
+ * (2) copy the remote branch head commit and its ancestors plus all referenced blobs into local objects/;
+ * (3) update the local tracking ref refs/heads/<remoteName>/<branch> to the fetched head.
+ * No files are checked out—this only updates local storage and the remote-tracking ref.
+ */
 void SomeObj::fetch(const std::string &remoteName, const std::string &remoteBranchName) {
     std::string remoteFile = ".gitlite/remotes/" + remoteName;
     if (!Utils::exists(remoteFile)) {
@@ -1166,6 +1266,7 @@ void SomeObj::fetch(const std::string &remoteName, const std::string &remoteBran
     std::string remoteHeadCommitId = Utils::readContentsAsString(remoteBranchFile);
     
     // Copy objects from remote
+    // BFS over commit graph starting from remote head; copy commits + blobs locally
     std::queue<std::string> q;
     q.push(remoteHeadCommitId);
     std::set<std::string> visited;
@@ -1189,7 +1290,7 @@ void SomeObj::fetch(const std::string &remoteName, const std::string &remoteBran
             Utils::writeContents(localObjectPath, content);
         }
 
-        // Parse parents
+        // Parse parents to continue BFS
         size_t pos = content.find("parent ");
         if (pos != std::string::npos) {
             size_t end = content.find('\n', pos);
@@ -1201,7 +1302,7 @@ void SomeObj::fetch(const std::string &remoteName, const std::string &remoteBran
             }
         }
 
-        // Copy blobs
+        // Copy blobs referenced by this commit
         size_t filesPos = content.find("files ");
         if (filesPos != std::string::npos) {
             std::string filesSection = content.substr(filesPos + 6);
@@ -1227,12 +1328,17 @@ void SomeObj::fetch(const std::string &remoteName, const std::string &remoteBran
         }
     }
 
-    // Update refs/remotes/<remoteName>/<remoteBranchName>
+    // Update local tracking ref to fetched head
     std::string refPath = ".gitlite/refs/heads/" + remoteName + "/" + remoteBranchName;
     Utils::writeContents(refPath, remoteHeadCommitId);
 }
 
-// Pulls changes from the remote repository
+/**
+ * Pulls changes from the remote repository.
+ * Performs a fetch (updates local remote-tracking ref and objects) and then merges
+ * that tracking branch into the current branch, reusing the normal merge logic
+ * and conflict handling. Equivalent to Git's "fetch + merge" behavior.
+ */
 void SomeObj::pull(const std::string &remoteName, const std::string &remoteBranchName) {
     fetch(remoteName, remoteBranchName);
     merge(remoteName + "/" + remoteBranchName);
